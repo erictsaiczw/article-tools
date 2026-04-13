@@ -14,6 +14,23 @@
 
 直接用浏览器打开对应 HTML 文件即可，无需安装任何依赖。
 
+## 请我喝咖啡
+
+如果这些工具对你有帮助，欢迎请我喝杯咖啡：
+
+<table>
+  <tr>
+    <td align="center">
+      <strong>支付宝</strong><br>
+      <img src="images/pay-alipay.jpg" alt="支付宝收款码" width="220">
+    </td>
+    <td align="center">
+      <strong>微信</strong><br>
+      <img src="images/pay-wechat.jpg" alt="微信收款码" width="220">
+    </td>
+  </tr>
+</table>
+
 ## License
 
 [MIT](LICENSE)

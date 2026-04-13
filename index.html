@@ -27,6 +27,7 @@
       height: 56px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 10px;
     }
 
@@ -35,6 +36,16 @@
       font-weight: 700;
       color: #111;
       letter-spacing: 0.02em;
+    }
+
+    .header-github {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+    }
+
+    .header-github iframe {
+      display: block;
     }
 
     /* ── Hero ── */
@@ -146,6 +157,84 @@
     .tag-live    { background: #dcfce7; color: #16a34a; }
     .tag-soon    { background: #f3f4f6; color: #9ca3af; }
 
+    /* ── Support ── */
+    .support {
+      width: 100%;
+      max-width: 880px;
+      padding: 0 32px 64px;
+    }
+
+    .support-card {
+      background: linear-gradient(180deg, #fffdf8, #ffffff);
+      border: 1.5px solid #f3e8d2;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 12px 30px rgba(148, 113, 45, 0.08);
+    }
+
+    .support-title {
+      font-size: 24px;
+      color: #111;
+      margin-bottom: 8px;
+    }
+
+    .support-desc {
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1.8;
+      font-family: sans-serif;
+      margin-bottom: 24px;
+    }
+
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .support-item {
+      background: #fff;
+      border: 1px solid #f3eadb;
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .support-item h3 {
+      font-size: 16px;
+      color: #111;
+      margin-bottom: 14px;
+    }
+
+    .support-item img {
+      width: 100%;
+      max-width: 240px;
+      border-radius: 12px;
+      display: block;
+      margin: 0 auto;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    @media (max-width: 640px) {
+      header {
+        padding: 0 20px;
+      }
+
+      .hero {
+        padding: 48px 20px 36px;
+      }
+
+      .grid,
+      .support {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .support-card {
+        padding: 22px;
+      }
+    }
+
     /* ── Footer ── */
     footer {
       margin-top: auto;
@@ -166,6 +255,16 @@
 
   <header>
     <span class="logo">烁皓的工具箱</span>
+    <div class="header-github" aria-label="GitHub Star Button">
+      <iframe
+        src="https://ghbtns.com/github-btn.html?user=eternityspring&repo=article-tools&type=star&count=true"
+        width="170"
+        height="20"
+        title="Star eternityspring/article-tools on GitHub"
+        frameborder="0"
+        scrolling="0">
+      </iframe>
+    </div>
   </header>
 
   <section class="hero">
@@ -250,6 +349,23 @@
     </div>
 
   </div>
+
+  <section class="support">
+    <div class="support-card">
+      <h2 class="support-title">请我喝咖啡</h2>
+      <p class="support-desc">如果这些小工具帮你省下了一点时间，欢迎扫一扫，请我喝杯咖啡。</p>
+      <div class="support-grid">
+        <div class="support-item">
+          <h3>支付宝</h3>
+          <img src="images/pay-alipay.jpg" alt="支付宝收款码">
+        </div>
+        <div class="support-item">
+          <h3>微信</h3>
+          <img src="images/pay-wechat.jpg" alt="微信收款码">
+        </div>
+      </div>
+    </div>
+  </section>
 
   <footer>
     由 <a href="https://x.com/eternityspring" target="_blank">@eternityspring</a> 构建 · 更多工具持续上线中

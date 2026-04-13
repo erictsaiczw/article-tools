@@ -41,13 +41,53 @@
     .header-github {
       display: inline-flex;
       align-items: center;
-      min-height: 30px;
+      min-height: 28px;
+      font-family: sans-serif;
     }
 
-    .header-github iframe {
-      display: block;
-      overflow: hidden;
-      border: 0;
+    .github-star-button,
+    .github-star-count {
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      background: #fff;
+      color: #24292f;
+      text-decoration: none;
+      border: 1px solid rgba(27, 31, 36, 0.15);
+      font-size: 12px;
+      line-height: 20px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .github-star-button {
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 6px 0 0 6px;
+      background: linear-gradient(180deg, #f6f8fa, #eff3f6);
+    }
+
+    .github-star-button:hover {
+      background: linear-gradient(180deg, #f3f4f6, #eaeef2);
+    }
+
+    .github-star-count {
+      min-width: 42px;
+      justify-content: center;
+      padding: 4px 10px;
+      margin-left: -1px;
+      border-radius: 0 6px 6px 0;
+      font-weight: 700;
+    }
+
+    .github-star-count:hover {
+      color: #0969da;
+    }
+
+    .github-star-icon {
+      width: 14px;
+      height: 14px;
+      flex: none;
     }
 
     /* ── Hero ── */
@@ -258,14 +298,15 @@
   <header>
     <span class="logo">烁皓的工具箱</span>
     <div class="header-github" aria-label="GitHub Star Button">
-      <iframe
-        src="https://ghbtns.com/github-btn.html?user=eternityspring&repo=article-tools&type=star&count=true&size=large"
-        width="170"
-        height="30"
-        title="Star eternityspring/article-tools on GitHub"
-        frameborder="0"
-        scrolling="0">
-      </iframe>
+      <a class="github-star-button" href="https://github.com/eternityspring/article-tools" target="_blank" rel="noopener noreferrer" aria-label="Star eternityspring/article-tools on GitHub">
+        <svg class="github-star-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M8 .25a.75.75 0 0 1 .673.418l1.88 3.81 4.204.611a.75.75 0 0 1 .416 1.279l-3.042 2.966.718 4.187a.75.75 0 0 1-1.088.79L8 12.347l-3.76 1.977a.75.75 0 0 1-1.088-.79l.718-4.187L.827 6.38a.75.75 0 0 1 .416-1.279l4.205-.611L7.327.668A.75.75 0 0 1 8 .25Z"/>
+        </svg>
+        <span>Star</span>
+      </a>
+      <a class="github-star-count" id="github-star-count" href="https://github.com/eternityspring/article-tools/stargazers" target="_blank" rel="noopener noreferrer" aria-label="View stargazers for eternityspring/article-tools">
+        <span id="github-star-count-text">...</span>
+      </a>
     </div>
   </header>
 
@@ -372,6 +413,23 @@
   <footer>
     由 <a href="https://x.com/eternityspring" target="_blank">@eternityspring</a> 构建 · 更多工具持续上线中
   </footer>
+
+  <script>
+    (async function loadGitHubStars() {
+      var countText = document.getElementById('github-star-count-text');
+      if (!countText) return;
+
+      try {
+        var response = await fetch('https://api.github.com/repos/eternityspring/article-tools');
+        if (!response.ok) throw new Error('Failed to fetch stars');
+        var data = await response.json();
+        var stars = typeof data.stargazers_count === 'number' ? data.stargazers_count : 0;
+        countText.textContent = stars.toLocaleString('en-US');
+      } catch (error) {
+        countText.textContent = 'GitHub';
+      }
+    })();
+  </script>
 
 </body>
 </html>

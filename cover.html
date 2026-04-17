@@ -123,7 +123,10 @@
       transition: background 0.15s, color 0.15s;
     }
 
-    .home-link:hover { background: #f3f4f6; color: #374151; }
+    .home-link:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
 
     .header-logo {
       font-size: 14px;
@@ -1201,6 +1204,83 @@
     .preset-card.active .preset-tags {
       color: #60a5fa;
     }
+
+    /* ── Source image panel ── */
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+
+    .source-thumb-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 4px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 6px;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: all 0.15s;
+      overflow: hidden;
+    }
+
+    .source-thumb-btn:hover {
+      border-color: #93c5fd;
+      background: #eff6ff;
+    }
+
+    .source-thumb-btn.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .source-thumb-btn img {
+      width: 100%;
+      aspect-ratio: 5 / 2;
+      object-fit: cover;
+      border-radius: 3px;
+    }
+
+    .source-thumb-btn span {
+      font-size: 9px;
+      font-family: sans-serif;
+      color: #6b7280;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .source-thumb-btn.active span {
+      color: #1d4ed8;
+    }
+
+    .source-upload-btn {
+      border-style: dashed;
+      min-height: 52px;
+      justify-content: center;
+    }
+
+    .source-upload-btn .upload-icon {
+      font-size: 18px;
+      color: #9ca3af;
+      line-height: 1;
+    }
+
+    /* ── Cover image element ── */
+    .cover-img {
+      position: absolute;
+      right: 0cqi;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 25cqi;
+      width: auto;
+      object-fit: contain;
+      z-index: 2;
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -1209,8 +1289,9 @@
   <!-- ── Header ── -->
   <header class="app-header">
     <a class="home-link" href="index.html" title="工具箱首页">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M1.5 6.5L7.5 1.5L13.5 6.5V13.5H9.5V9.5H5.5V13.5H1.5V6.5Z"/>
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1.5 6.5L7.5 1.5L13.5 6.5V13.5H9.5V9.5H5.5V13.5H1.5V6.5Z" />
       </svg>
     </a>
     <span class="header-logo">封面生成器 · Cover Maker</span>
@@ -1335,6 +1416,29 @@
           </div>
         </div>
 
+        <!-- Source Images -->
+        <div class="psec">
+          <div class="psec-header">
+            <span class="psec-title">素材 Image</span>
+            <div class="field-actions" id="cover-img-toggle-wrap" style="display:none">
+              <button class="vis-toggle on" id="toggle-cover-img" onclick="toggleCoverImg()">显示</button>
+            </div>
+          </div>
+          <div class="source-grid" id="source-grid"></div>
+          <div class="field" id="cover-img-controls" style="display:none">
+            <label>大小</label>
+            <div class="slider-row">
+              <input id="sld-cover-img" type="range" min="10" max="40" step="1" value="25">
+              <span id="val-cover-img" class="slider-val">25 cqi</span>
+            </div>
+            <label>水平位置</label>
+            <div class="slider-row">
+              <input id="sld-cover-img-right" type="range" min="-15" max="15" step="0.5" value="3">
+              <span id="val-cover-img-right" class="slider-val">3 cqi</span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </aside>
 
@@ -1349,6 +1453,7 @@
               <p class="subtitle"></p>
             </div>
             <div class="meta"></div>
+            <img class="cover-img" id="cover-img" src="" style="display:none" alt="">
           </div>
         </div>
       </div>
@@ -1474,6 +1579,107 @@
   </div><!-- /.layout -->
 
   <script>
+    // ── Cover image ────────────────────────────────────────────────────────
+    function applyCoverImg() {
+      const img = document.getElementById('cover-img');
+      const controls = document.getElementById('cover-img-controls');
+      const toggleWrap = document.getElementById('cover-img-toggle-wrap');
+      if (!coverImgState.path) {
+        img.style.display = 'none';
+        controls.style.display = 'none';
+        toggleWrap.style.display = 'none';
+        return;
+      }
+      img.src = coverImgState.path;
+      img.style.display = coverImgState.visible ? '' : 'none';
+      img.style.height = coverImgState.size + 'cqi';
+      img.style.right = coverImgState.right + 'cqi';
+      controls.style.display = '';
+      toggleWrap.style.display = '';
+      const btn = document.getElementById('toggle-cover-img');
+      btn.textContent = coverImgState.visible ? '显示' : '隐藏';
+      btn.classList.toggle('on', coverImgState.visible);
+      document.getElementById('sld-cover-img').value = coverImgState.size;
+      document.getElementById('val-cover-img').textContent = coverImgState.size + ' cqi';
+      document.getElementById('sld-cover-img-right').value = coverImgState.right;
+      document.getElementById('val-cover-img-right').textContent = coverImgState.right + ' cqi';
+    }
+
+    function toggleCoverImg() {
+      if (!coverImgState.path) return;
+      coverImgState.visible = !coverImgState.visible;
+      applyCoverImg();
+    }
+
+    function selectSourceImage(path) {
+      coverImgState.path = coverImgState.path === path ? null : path;
+      if (coverImgState.path) coverImgState.visible = true;
+      document.querySelectorAll('.source-thumb-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.src === coverImgState.path);
+      });
+      applyCoverImg();
+    }
+
+    function initSourcePanel() {
+      const grid = document.getElementById('source-grid');
+      SOURCE_IMAGES.forEach(src => {
+        const btn = document.createElement('button');
+        btn.className = 'source-thumb-btn';
+        btn.dataset.src = src;
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = src.split('/').pop().replace(/\.[^.]+$/, '');
+        const name = document.createElement('span');
+        name.textContent = src.split('/').pop().replace(/\.[^.]+$/, '');
+        btn.append(img, name);
+        btn.addEventListener('click', () => selectSourceImage(src));
+        grid.appendChild(btn);
+      });
+
+      const uploadLabel = document.createElement('label');
+      uploadLabel.className = 'source-thumb-btn source-upload-btn';
+      uploadLabel.title = '上传本地图片';
+      const uploadIcon = document.createElement('span');
+      uploadIcon.className = 'upload-icon';
+      uploadIcon.textContent = '+';
+      const uploadText = document.createElement('span');
+      uploadText.textContent = '上传';
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.style.display = 'none';
+      fileInput.addEventListener('change', function () {
+        if (!this.files[0]) return;
+        const url = URL.createObjectURL(this.files[0]);
+        const fname = this.files[0].name.replace(/\.[^.]+$/, '');
+        const newBtn = document.createElement('button');
+        newBtn.className = 'source-thumb-btn';
+        newBtn.dataset.src = url;
+        const img = document.createElement('img'); img.src = url; img.alt = fname;
+        const name = document.createElement('span'); name.textContent = fname;
+        newBtn.append(img, name);
+        newBtn.addEventListener('click', () => selectSourceImage(url));
+        grid.insertBefore(newBtn, uploadLabel);
+        coverImgState.path = url;
+        coverImgState.visible = true;
+        document.querySelectorAll('.source-thumb-btn').forEach(b => b.classList.toggle('active', b.dataset.src === url));
+        applyCoverImg();
+      });
+      uploadLabel.append(uploadIcon, uploadText, fileInput);
+      grid.appendChild(uploadLabel);
+
+      document.getElementById('sld-cover-img').addEventListener('input', function () {
+        coverImgState.size = +this.value;
+        document.getElementById('val-cover-img').textContent = this.value + ' cqi';
+        if (coverImgState.path) document.getElementById('cover-img').style.height = this.value + 'cqi';
+      });
+      document.getElementById('sld-cover-img-right').addEventListener('input', function () {
+        coverImgState.right = +this.value;
+        document.getElementById('val-cover-img-right').textContent = this.value + ' cqi';
+        if (coverImgState.path) document.getElementById('cover-img').style.right = this.value + 'cqi';
+      });
+    }
+
     // ── Color schemes ──────────────────────────────────────────────────────
     const COLOR_SCHEMES = [
       // ── 纯色 (0–5) ───────────────────────────────────────────────────────
@@ -1593,6 +1799,9 @@
     const DEFAULT_DECO = 'classic';
     const DEFAULT_FONT = 'default';
     let currentDeco = 'classic';
+
+    const SOURCE_IMAGES = ['images/source/source1.png', 'images/source/source2.png', 'images/source/source3.png'];
+    const coverImgState = { path: null, visible: true, size: 25, right: 3 };
 
     const FONT_OPTIONS = {
       default: { name: 'Noto Serif SC', family: "'Noto Serif SC', serif" },
@@ -1920,6 +2129,7 @@
       },
       { name: '石墨简约', scheme: 4, deco: 'minimal', font: 'misans' },
       { name: '琥珀', scheme: 5, deco: 'classic', font: 'default' },
+      { name: '图片海蓝', scheme: 6, deco: 'classic', font: 'default', image: { path: 'images/source/source3.png', size: 38, right: -3 }, typography: { contentWidth: 55 } },
     ];
 
     const DECO_LABELS = {
@@ -1994,6 +2204,35 @@
         if (visState[field] !== show) toggleVis(field);
       });
       document.querySelectorAll('.preset-card').forEach(c => c.classList.toggle('active', +c.dataset.preset === idx));
+      // Handle typography overrides
+      if (p.typography) {
+        const typoMap = {
+          labelSize: 'sld-label', titleSize: 'sld-title', subtitleSize: 'sld-subtitle',
+          contentWidth: 'sld-width', titleLineHeight: 'sld-title-lh', subtitleLineHeight: 'sld-subtitle-lh',
+          titleMarginTop: 'sld-title-mt', titleMarginBottom: 'sld-title-mb',
+        };
+        Object.entries(p.typography).forEach(([key, val]) => {
+          const el = document.getElementById(typoMap[key]);
+          if (el) el.value = val;
+        });
+        syncAllSliders();
+      }
+      // Handle cover image
+      if (p.image) {
+        coverImgState.path = p.image.path;
+        coverImgState.visible = true;
+        coverImgState.size = p.image.size || 25;
+        coverImgState.right = p.image.right ?? 3;
+      } else {
+        coverImgState.path = null;
+        coverImgState.visible = true;
+        coverImgState.size = 25;
+        coverImgState.right = 3;
+      }
+      document.querySelectorAll('.source-thumb-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.src === coverImgState.path);
+      });
+      applyCoverImg();
     }
 
     function initPresets() {
@@ -2154,6 +2393,15 @@
       });
       if (Object.keys(textColors).length) changes.textColors = textColors;
 
+      if (coverImgState.path) {
+        changes.image = {
+          path: coverImgState.path,
+          size: coverImgState.size,
+          right: coverImgState.right,
+          visible: coverImgState.visible,
+        };
+      }
+
       return {
         tool: 'cover.html',
         note: '请按以下配置新建一个快捷预设。未列出的字段保持默认。',
@@ -2207,6 +2455,9 @@
       document.getElementById('sel-font').value = defaultPresetFont;
       applyFontChoice(defaultPresetFont);
       Object.keys(visState).forEach(f => { if (!visState[f]) toggleVis(f); });
+      coverImgState.path = null; coverImgState.visible = true; coverImgState.size = 25; coverImgState.right = 3;
+      document.querySelectorAll('.source-thumb-btn').forEach(b => b.classList.remove('active'));
+      applyCoverImg();
       const p = RATIO_PRESETS['1200/480'];
       document.getElementById('sld-title').max = p.titleMax;
       document.getElementById('sld-subtitle').max = p.subtitleMax;
@@ -2252,6 +2503,7 @@
     initFontPicker();
     syncContent();
     syncAllSliders();
+    initSourcePanel();
     initPresets();
     applyPreset(0);
   </script>

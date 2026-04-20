@@ -373,7 +373,6 @@
         stats.textContent = '0 字';
         return;
       }
-      updateTitleDisplay(extractTitle(rawMd));
       const md = rawMd
         .replace(/^# .+\n?/m, '')
         .replace(/\n\n(```)/g, '\n$1')
@@ -495,6 +494,14 @@
         const res = await fetch('./draft.md');
         if (!res.ok) return;
         const text = await res.text();
+        // 从封面配置 JSON 块读取标题
+        const jsonM = text.match(/```json\s*([\s\S]*?)```/);
+        if (jsonM) {
+          try {
+            const parsed = JSON.parse('{' + jsonM[1].trim().replace(/,$/, '') + '}');
+            updateTitleDisplay(parsed.changes?.content?.title || '');
+          } catch (_) {}
+        }
         const m = text.match(/^## 正文\s*\n([\s\S]*)/m);
         // 去掉末尾的 footer（--- 后跟 *运行...）
         const body = m
